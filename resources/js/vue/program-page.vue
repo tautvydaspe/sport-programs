@@ -29,6 +29,13 @@
                     </div>
                 </div>
             </div>
+            <form class="mt-5" style="color: white;" @submit.prevent="addProgramReview">
+                <input type="text" name="atsiliepimas" placeholder="Atsiliepimas" />
+                <input type="text" name="pradinis_kuno_svoris_kg" placeholder="Pradinis kuno svoris kg" />
+                <input type="text" name="dabartinis_kuno_svoris_kg" placeholder="Dabartinis kuno svoris kg" />
+                <input type="text" name="programos_tikslas" placeholder="Programos tikslas" />
+                <button type="submit" class="px-4 py-2 mt-2 w-100">Įterpti</button>
+            </form>
         </div>
         <div v-else class="text-center mt-4" style="color: white;">
             404 ERROR THIS PAGE WAS NOT FOUND
@@ -48,6 +55,13 @@ export default {
             program: [],
             trainerData: [],
             reviewData: [],
+            atsiliepimas: {
+                atsiliepimas: "",
+                pradinis_kuno_svoris_kg: 0,
+                dabartinis_kuno_svoris_kg: 0,
+                programos_tikslas: "",
+                programa_id : 1,
+            },
         }
     },
     methods: {
@@ -77,6 +91,39 @@ export default {
                 .catch( error => {
                     console.log( error );
                 })
+        },
+        addProgramReview (submitEvent) {
+            if (submitEvent.target.elements.atsiliepimas.value === '' || submitEvent.target.elements.pradinis_kuno_svoris_kg.value === '' || submitEvent.target.elements.dabartinis_kuno_svoris_kg.value === '') {
+                alert("Ne visi duomenys ivesti");
+            }
+
+            let data = {
+                    atsiliepimas: submitEvent.target.elements.atsiliepimas.value,
+                    pradinis_kuno_svoris_kg: parseFloat(submitEvent.target.elements.pradinis_kuno_svoris_kg.value),
+                    dabartinis_kuno_svoris_kg: parseFloat(submitEvent.target.elements.dabartinis_kuno_svoris_kg.value),
+                    programos_tikslas: submitEvent.target.elements.programos_tikslas.value,
+                    programa_id : this.id,
+                }
+
+            console.log('aspinfauohfuoasf')
+            console.log(data)
+
+            axios.post('/api/programa/review/store', data)
+                .then(response => {
+                    console.log("YEY")
+                    if (response.status === 201) {
+                            this.atsiliepimas.atsiliepimas = ""
+                            this.atsiliepimas.pradinis_kuno_svoris_kg = 0
+                            this.atsiliepimas.dabartinis_kuno_svoris_kg = 0
+                            this.atsiliepimas.programos_tikslas = ""
+                            this.atsiliepimas.programa_id = 1
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+
+            this.getProgramReviews(this.id)
         },
     },
     created() {

@@ -10830,6 +10830,11 @@ nav {
   justify-content: space-between;
   height: 10vh;
 }
+nav li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 nav a {
   color: white;
   text-decoration: none;
@@ -10837,6 +10842,18 @@ nav a {
   border-bottom: 1px solid transparent;
 }
 nav a:hover {
+  border-bottom: 2px solid white;
+  color: white;
+}
+nav button {
+  color: white;
+  text-decoration: none;
+  background-color: transparent;
+  padding: 5px 10px;
+  border: none;
+  border-bottom: 1px solid transparent;
+}
+nav button:hover {
   border-bottom: 2px solid white;
   color: white;
 }

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\AtsiliepimasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,7 @@ Route::prefix('/programa')->group( function() {
     Route::get('/{id}', [ProgramController::class, 'singleProgramIndex']);
     Route::get('/{id}/treneriai', [ProgramController::class, 'singleProgramTrainers']);
     Route::get('/{id}/reviews', [ProgramController::class, 'singleProgramReviews']);
+    Route::post('/review/store', [AtsiliepimasController::class, 'store']);
     Route::post('/store', [ProgramController::class, 'store']);
     Route::put('/{id}', [ProgramController::class, 'update']);
     Route::delete('/{id}', [ProgramController::class, 'destroy']);

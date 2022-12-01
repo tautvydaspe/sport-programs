@@ -36,10 +36,10 @@
                     <li class="nav-item">
                         <a class="menu-item" href="#" style="color: white">Contacts</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="showLogout === false">
                         <a class="menu-item" href="/login" style="color: white">Login</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="showLogout === false">
                         <a class="menu-item" href="/register" style="color: white">Register</a>
                     </li>
                     <li v-if="isAdmin" class="nav-item">
@@ -74,9 +74,7 @@ export default {
                 })
         },
         isLoggedIn() {
-            console.log('ATEJAU')
             axios.get('api/authenticated').then(() => {
-                console.log('++++++++++++++')
                 this.showLogout = true
             })
             .catch(error => {

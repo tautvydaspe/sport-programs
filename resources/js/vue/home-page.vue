@@ -11,7 +11,7 @@
                             developed by <br />
                             best minds.
                         </h1>
-                        <a class="py-3 px-4 mb-5" href="#">GET STARTED NOW</a>
+                        <a class="py-3 px-4 mb-5" href="#programs">GET STARTED NOW</a>
                     </div>
                 </div>
             </div>
@@ -22,7 +22,6 @@
                     <input type="text" name="pavadinimas" placeholder="pavadinimas" />
                     <input type="text" name="trukme_sav" placeholder="trukme_sav" />
                     <input type="text" name="kaina" placeholder="kaina" />
-<!--                    <input type="text" name="fk_tikslas_id" placeholder="tikslas_id" /><br>-->
                     <select name="fk_tikslas_id">
                         <option v-for="(tikslas, index) in pagrindiniai_tikslai" :value="tikslas.id_pagrindinis_programos_tikslas">{{tikslas.tikslas}}</option>
                     </select><br>
@@ -43,7 +42,7 @@
             <div class="container">
                 <div class="row d-flex justify-content-between my-5">
                     <div class="col-12 col-lg-6 mb-5" style="color: white;" v-for="(program, index) in programs" :key="index">
-                        <div class="image-container program-card w-100">
+                        <div id="programs" class="image-container program-card w-100">
                             <img
                                 v-if="index===0"
                                 src="http://127.0.0.1:8000/storage/strength.jpg"

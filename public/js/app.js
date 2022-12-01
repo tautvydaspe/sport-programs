@@ -2141,9 +2141,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     isLoggedIn: function isLoggedIn() {
       var _this2 = this;
-      console.log('ATEJAU');
       axios.get('api/authenticated').then(function () {
-        console.log('++++++++++++++');
         _this2.showLogout = true;
       })["catch"](function (error) {
         //console.log(error);
@@ -2299,7 +2297,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _Navbar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Navbar */ "./resources/js/vue/Navbar.vue");
-//
 //
 //
 //
@@ -2596,6 +2593,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -2606,7 +2610,14 @@ __webpack_require__.r(__webpack_exports__);
     return {
       program: [],
       trainerData: [],
-      reviewData: []
+      reviewData: [],
+      atsiliepimas: {
+        atsiliepimas: "",
+        pradinis_kuno_svoris_kg: 0,
+        dabartinis_kuno_svoris_kg: 0,
+        programos_tikslas: "",
+        programa_id: 1
+      }
     };
   },
   methods: {
@@ -2633,6 +2644,34 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+    addProgramReview: function addProgramReview(submitEvent) {
+      var _this4 = this;
+      if (submitEvent.target.elements.atsiliepimas.value === '' || submitEvent.target.elements.pradinis_kuno_svoris_kg.value === '' || submitEvent.target.elements.dabartinis_kuno_svoris_kg.value === '') {
+        alert("Ne visi duomenys ivesti");
+      }
+      var data = {
+        atsiliepimas: submitEvent.target.elements.atsiliepimas.value,
+        pradinis_kuno_svoris_kg: parseFloat(submitEvent.target.elements.pradinis_kuno_svoris_kg.value),
+        dabartinis_kuno_svoris_kg: parseFloat(submitEvent.target.elements.dabartinis_kuno_svoris_kg.value),
+        programos_tikslas: submitEvent.target.elements.programos_tikslas.value,
+        programa_id: this.id
+      };
+      console.log('aspinfauohfuoasf');
+      console.log(data);
+      axios.post('/api/programa/review/store', data).then(function (response) {
+        console.log("YEY");
+        if (response.status === 201) {
+          _this4.atsiliepimas.atsiliepimas = "";
+          _this4.atsiliepimas.pradinis_kuno_svoris_kg = 0;
+          _this4.atsiliepimas.dabartinis_kuno_svoris_kg = 0;
+          _this4.atsiliepimas.programos_tikslas = "";
+          _this4.atsiliepimas.programa_id = 1;
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getProgramReviews(this.id);
     }
   },
   created: function created() {
@@ -21253,9 +21292,33 @@ var render = function () {
               _vm._v(" "),
               _vm._m(4),
               _vm._v(" "),
-              _vm._m(5),
+              _vm.showLogout === false
+                ? _c("li", { staticClass: "nav-item" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "menu-item",
+                        staticStyle: { color: "white" },
+                        attrs: { href: "/login" },
+                      },
+                      [_vm._v("Login")]
+                    ),
+                  ])
+                : _vm._e(),
               _vm._v(" "),
-              _vm._m(6),
+              _vm.showLogout === false
+                ? _c("li", { staticClass: "nav-item" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "menu-item",
+                        staticStyle: { color: "white" },
+                        attrs: { href: "/register" },
+                      },
+                      [_vm._v("Register")]
+                    ),
+                  ])
+                : _vm._e(),
               _vm._v(" "),
               _vm.isAdmin
                 ? _c("li", { staticClass: "nav-item" }, [
@@ -21377,38 +21440,6 @@ var staticRenderFns = [
           attrs: { href: "#" },
         },
         [_vm._v("Contacts")]
-      ),
-    ])
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "nav-item" }, [
-      _c(
-        "a",
-        {
-          staticClass: "menu-item",
-          staticStyle: { color: "white" },
-          attrs: { href: "/login" },
-        },
-        [_vm._v("Login")]
-      ),
-    ])
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "nav-item" }, [
-      _c(
-        "a",
-        {
-          staticClass: "menu-item",
-          staticStyle: { color: "white" },
-          attrs: { href: "/register" },
-        },
-        [_vm._v("Register")]
       ),
     ])
   },
@@ -21702,7 +21733,10 @@ var render = function () {
               [
                 _c(
                   "div",
-                  { staticClass: "image-container program-card w-100" },
+                  {
+                    staticClass: "image-container program-card w-100",
+                    attrs: { id: "programs" },
+                  },
                   [
                     index === 0
                       ? _c("img", {
@@ -21805,7 +21839,7 @@ var render = function () {
       _vm._v(" "),
       _c("div", { staticClass: "text mt-5" }, [
         _vm._v(
-          "\n                Pasirinkta sporto programų tema. Treneriai siunčia programas su sportu\n                susijusiam tinklalapio administratoriui (projekto savininku), jis jas\n                įvertina ir atrinktas skelbia savo tinklalapyje. Tokiu būdu treneriai\n                gauna galimybę garsinti savo vardą profesinėje srityje, kas treneriams\n                yra ypatingai svarbu. Vartotojai atėję į tinklalapį gali parsisiųsti\n                programas ir sportuoti pagal jas.\n            "
+          "\n            Pasirinkta sporto programų tema. Treneriai siunčia programas su sportu\n            susijusiam tinklalapio administratoriui (projekto savininku), jis jas\n            įvertina ir atrinktas skelbia savo tinklalapyje. Tokiu būdu treneriai\n            gauna galimybę garsinti savo vardą profesinėje srityje, kas treneriams\n            yra ypatingai svarbu. Vartotojai atėję į tinklalapį gali parsisiųsti\n            programas ir sportuoti pagal jas.\n        "
         ),
       ]),
     ]),
@@ -21822,18 +21856,20 @@ var staticRenderFns = [
           _c("h6", [_vm._v("YOU'RE MORE THAN JUST A MEMBER")]),
           _vm._v(" "),
           _c("h1", { staticClass: "pb-5" }, [
-            _vm._v("\n                            Gym programs "),
+            _vm._v("\n                        Gym programs "),
             _c("br"),
-            _vm._v("\n                            developed by "),
+            _vm._v("\n                        developed by "),
             _c("br"),
             _vm._v(
-              "\n                            best minds.\n                        "
+              "\n                        best minds.\n                    "
             ),
           ]),
           _vm._v(" "),
-          _c("a", { staticClass: "py-3 px-4 mb-5", attrs: { href: "#" } }, [
-            _vm._v("GET STARTED NOW"),
-          ]),
+          _c(
+            "a",
+            { staticClass: "py-3 px-4 mb-5", attrs: { href: "#programs" } },
+            [_vm._v("GET STARTED NOW")]
+          ),
         ]),
       ]),
     ])
@@ -22108,6 +22144,62 @@ var render = function () {
                   ),
                 ])
               : _vm._e(),
+            _vm._v(" "),
+            _c(
+              "form",
+              {
+                staticClass: "mt-5",
+                staticStyle: { color: "white" },
+                on: {
+                  submit: function ($event) {
+                    $event.preventDefault()
+                    return _vm.addProgramReview.apply(null, arguments)
+                  },
+                },
+              },
+              [
+                _c("input", {
+                  attrs: {
+                    type: "text",
+                    name: "atsiliepimas",
+                    placeholder: "Atsiliepimas",
+                  },
+                }),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    type: "text",
+                    name: "pradinis_kuno_svoris_kg",
+                    placeholder: "Pradinis kuno svoris kg",
+                  },
+                }),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    type: "text",
+                    name: "dabartinis_kuno_svoris_kg",
+                    placeholder: "Dabartinis kuno svoris kg",
+                  },
+                }),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    type: "text",
+                    name: "programos_tikslas",
+                    placeholder: "Programos tikslas",
+                  },
+                }),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "px-4 py-2 mt-2 w-100",
+                    attrs: { type: "submit" },
+                  },
+                  [_vm._v("Įterpti")]
+                ),
+              ]
+            ),
           ])
         : _c(
             "div",
