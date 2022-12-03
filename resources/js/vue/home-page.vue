@@ -5,19 +5,19 @@
             <div class="hero-image">
                 <div class="container">
                     <div class="hero-text pt-5">
-                        <h6>YOU'RE MORE THAN JUST A MEMBER</h6>
+                        <h6>TU DAUGIAU NEI PAPRASTAS NAUDOTOJAS</h6>
                         <h1 class="pb-5">
-                            Gym programs <br />
-                            developed by <br />
-                            best minds.
+                            Sporto programos <br />
+                            sukurtos paciu <br />
+                            talentingiausiu.
                         </h1>
-                        <a class="py-3 px-4 mb-5" href="#programs">GET STARTED NOW</a>
+                        <a class="py-3 px-4 mb-5" href="#programs">PRADEK JAU DABAR</a>
                     </div>
                 </div>
             </div>
         </header>
         <main>
-            <div>
+            <div v-if="isAdmin">
                 <form class="mt-5" style="color: white;" enctype="multipart/form-data" @submit.prevent="addProgram">
                     <input type="text" name="pavadinimas" placeholder="pavadinimas" />
                     <input type="text" name="trukme_sav" placeholder="trukme_sav" />
@@ -70,9 +70,9 @@
                             <div class="centered">
                                 <h2>{{program.pavadinimas}}</h2>
                                 <h4 class="my-3">${{program.kaina}} USD</h4>
-                                <router-link :to="`programa/${program.id}`">GET IT NOW</router-link>
-                                <button class="py-2 px-3" style="background-color: red;" @click="deleteItem(program.id)">DELETE</button>
-                                <button class="py-2 px-3" style="background-color: #548699;" @click="openEditForm(index)">REDAGUOTI</button>
+                                <router-link class="py-2 px-3" style="text-decoration: none; color: white; background-color: #4a8699" :to="`programa/${program.id}`">GAUKITE DABAR</router-link>
+                                <button v-if="isAdmin" class="py-2 px-3" style="background-color: red;" @click="deleteItem(program.id)">DELETE</button>
+                                <button v-if="isAdmin" class="py-2 px-3" style="background-color: #548699;" @click="openEditForm(index)">REDAGUOTI</button>
                                 <form v-if="program.showEditForm" class="mb-5 mt-1" style="color: white;" @submit.prevent="updateProgram($event,program.id)">
                                     <input style="width: 100%;" type="text" name="pavadinimas" :value=program.pavadinimas />
                                     <input style="width: 100%;" type="text" name="trukme_sav" :value=program.trukme_sav />
@@ -118,9 +118,22 @@ export default {
             pagrindiniai_tikslai: {},
             showLogout: false,
             nuotrauka: "",
+            isAdmin: false,
         }
     },
     methods: {
+        checkIfAdmin() {
+            axios.get('/api/user')
+                .then( response => {
+                    this.user = response.data
+                    if (this.user.role === 0) {
+                        this.isAdmin = true;
+                    }
+                })
+                .catch( error => {
+                    console.log( error );
+                })
+        },
         getProgramsList() {
             axios.get('/api/programos')
                 .then(response => {
@@ -130,7 +143,7 @@ export default {
                     })
                 })
                 .catch(error => {
-                    alert(error);
+                    console.log(error);
                 })
         },
         getAimsList() {
@@ -229,6 +242,7 @@ export default {
         },
     },
     created() {
+        this.checkIfAdmin()
         this.getProgramsList()
         this.getAimsList()
     },

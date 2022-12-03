@@ -1,6 +1,6 @@
 <template>
     <div>
-        <nav class="navbar navbar-expand-lg navbar-light bg-dark" style="padding: 35px 0 35px 0">
+        <nav class="navbar navbar-expand-lg navbar-light bg-dark" style="padding: 35px 0 35px 0" :key="rerender">
             <div class="container">
                 <a class="" href="/"><div>
                     <div style="width: 3rem">
@@ -62,14 +62,17 @@ export default {
         return {
             isAdmin: false,
             showLogout: false,
+            rerender: false,
         }
     },
     methods: {
         logout() {
             axios.post('/api/logout')
                 .then(() => {
+                    this.showLogout = false
+                    this.rerender = !this.rerender
                     alert('You have been logged off');
-                    this.$router.go()
+                    window.location.reload();
                 })
                 .catch(error => {
                     console.log(error);

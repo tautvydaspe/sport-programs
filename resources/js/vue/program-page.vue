@@ -25,7 +25,7 @@
                             <p><span style="font-size: 1.5rem; font-weight: 700; color: #548699">{{index+1}}</span> Programos tikslas: {{review.programos_tikslas}}; Pradinis kuno svoris: {{review.pradinis_kuno_svoris_kg}}kg; Dabartinis kuno svoris: {{review.dabartinis_kuno_svoris_kg}}kg</p>
                             <p>Atsiliepimas: {{review.atsiliepimas}}</p>
                             <button class="py-2 px-3" style="background-color: red;" @click="deleteReview(review.id)">TRINTI</button>
-                            <button class="py-2 px-3" style="background-color: #548699;" @click="openEditForm(index)">REDAGUOTI</button>
+                            <button v-if="isAdmin" class="py-2 px-3" style="background-color: #548699;" @click="openEditForm(index)">REDAGUOTI</button>
                             <form v-if="review.showEditForm" class="mb-5 mt-1" style="color: white;" @submit.prevent="updateProgramReview($event,review.id)">
                                 <input class="mb-1" style="width: 97%" type="text" name="atsiliepimas" :value=review.atsiliepimas />
                                 <input style="width: 32%" type="text" name="pradinis_kuno_svoris_kg" :value=review.pradinis_kuno_svoris_kg />
@@ -63,6 +63,7 @@ export default {
     },
     data: function () {
         return {
+            isAdmin: false,
             program: [],
             rerender: false,
             trainerData: [],
@@ -77,6 +78,18 @@ export default {
         }
     },
     methods: {
+        checkIfAdmin() {
+            axios.get('/api/user')
+                .then( response => {
+                    this.user = response.data
+                    if (this.user.role === 0) {
+                        this.isAdmin = true;
+                    }
+                })
+                .catch( error => {
+                    console.log( error );
+                })
+        },
         getProgramData (id) {
             axios.get('/api/programa/' + id)
                 .then( response => {
@@ -191,6 +204,7 @@ export default {
     },
     created() {
         this.id = this.$route.params.id;
+        this.checkIfAdmin()
         this.getProgramData(this.id)
         this.getProgramTrainers(this.id);
         this.getProgramReviews(this.id);

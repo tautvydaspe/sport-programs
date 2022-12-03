@@ -37,10 +37,10 @@ class TrenerisController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'vardas' => 'required',
-            'pavarde' => 'required',
-            'specializacija' => 'required',
-            'issilavinimas' => 'required',
+            'vardas' => ['required', 'max:30', 'min:2'],
+            'pavarde' => ['required', 'max:30', 'min:2'],
+            'specializacija' => ['required', 'max:100', 'min:2'],
+            'issilavinimas' => ['required', 'max:100', 'min:2'],
         ]);
 
         $newTrainer = new Treneris;
@@ -85,6 +85,13 @@ class TrenerisController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $validatedData = $request->validate([
+            'vardas' => ['required', 'max:30', 'min:2'],
+            'pavarde' => ['required', 'max:30', 'min:2'],
+            'specializacija' => ['required', 'max:100', 'min:2'],
+            'issilavinimas' => ['required', 'max:100', 'min:2'],
+        ]);
+
         $existingTrainer = Treneris::find( $id );
 
         if( $existingTrainer ) {

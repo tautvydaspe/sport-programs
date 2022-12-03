@@ -19,10 +19,6 @@ class ProgramController extends Controller
         $data = Programa::join('pagrindinis_programos_tikslas', 'pagrindinis_programos_tikslas.id', '=', 'programa.fk_tikslas_id')
             ->get(['programa.id', 'programa.pavadinimas', 'programa.trukme_sav', 'programa.kaina', 'programa.programos_pagrindine_dirbama_raumenu_grupe', 'programa.nuotrauka', 'pagrindinis_programos_tikslas.tikslas']);
 
-//        $program = Programa::find(1);
-//        $program->treneriai;
-
-        //return Programa::orderBy('kaina', 'DESC')->get();
         return $data;
     }
 
@@ -34,17 +30,8 @@ class ProgramController extends Controller
      */
     public function singleProgramIndex($id)
     {
-//        $singleProgramData = Programa::find($id);
-//        $tempId = intval($singleProgramData->id);
-//        //$data = Programa::join('sudaro', 'sudaro.fk_programaid', '=', intval($tempId))
-//            //->get();
-//
-//        $data = DB::table('programa')->get();
-
         $program = Programa::find($id);
 
-        //return $program->treneriai;
-        //return view('program-page')->with('program', $program);
         return $program;
     }
 
@@ -92,8 +79,13 @@ class ProgramController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'pavadinimas' => ['required', 'unique:programa', 'max:50', 'min:2'],
+            'trukme_sav' => ['required', 'max:2', 'min:1'],
+            'kaina' => ['required'],
+        ]);
+
         $newProgram = new Programa;
-        //$newMainGoal = new PagrindinisProgramosTikslas;
         $newProgram->pavadinimas = $request->get("pavadinimas");
         $newProgram->trukme_sav = $request->get("trukme_sav");
         $newProgram->kaina = $request->get("kaina");
@@ -103,10 +95,8 @@ class ProgramController extends Controller
             $filename = time().'.'.$request->nuotrauka->getClientOriginalExtension();
             $newProgram->nuotrauka = $filename;
         $newProgram->fk_tikslas_id = $request->get("fk_tikslas_id");
-        //$newMainGoal->tikslas = $request->pagrindinis_programos_tikslas["tikslas"];
 
         $newProgram->save();
-        //$newMainGoal->save();
 
         return $newProgram;
     }

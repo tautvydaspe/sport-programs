@@ -19,7 +19,7 @@ const routes = [
             axios.get('api/authenticated').then(() => {
                 next()
             }).catch(() => {
-                return next({name: 'Login'})
+                return next({ name: 'Login' })
             })
         }
     },

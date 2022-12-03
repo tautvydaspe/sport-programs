@@ -2128,15 +2128,18 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       isAdmin: false,
-      showLogout: false
+      showLogout: false,
+      rerender: false
     };
   },
   methods: {
     logout: function logout() {
       var _this = this;
       axios.post('/api/logout').then(function () {
+        _this.showLogout = false;
+        _this.rerender = !_this.rerender;
         alert('You have been logged off');
-        _this.$router.go();
+        window.location.reload();
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2747,32 +2750,44 @@ __webpack_require__.r(__webpack_exports__);
       },
       pagrindiniai_tikslai: {},
       showLogout: false,
-      nuotrauka: ""
+      nuotrauka: "",
+      isAdmin: false
     };
   },
   methods: {
-    getProgramsList: function getProgramsList() {
+    checkIfAdmin: function checkIfAdmin() {
       var _this = this;
+      axios.get('/api/user').then(function (response) {
+        _this.user = response.data;
+        if (_this.user.role === 0) {
+          _this.isAdmin = true;
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    getProgramsList: function getProgramsList() {
+      var _this2 = this;
       axios.get('/api/programos').then(function (response) {
-        _this.programs = response.data;
-        _this.programs.forEach(function (program) {
+        _this2.programs = response.data;
+        _this2.programs.forEach(function (program) {
           program.showEditForm = false;
         });
       })["catch"](function (error) {
-        alert(error);
+        console.log(error);
       });
     },
     getAimsList: function getAimsList() {
-      var _this2 = this;
+      var _this3 = this;
       axios.get('/api/pagrindiniai_tikslai').then(function (response) {
-        _this2.pagrindiniai_tikslai = response.data;
+        _this3.pagrindiniai_tikslai = response.data;
         console.log(response);
       })["catch"](function (error) {
         alert(error);
       });
     },
     addProgram: function addProgram(submitEvent) {
-      var _this3 = this;
+      var _this4 = this;
       if (submitEvent.target.elements.pavadinimas.value === '' || submitEvent.target.elements.trukme_sav.value === '' || submitEvent.target.elements.kaina.value === '') {
         alert("Ne visi duomenys ivesti");
       }
@@ -2791,10 +2806,10 @@ __webpack_require__.r(__webpack_exports__);
       data.append('fk_tikslas_id', parseInt(submitEvent.target.elements.fk_tikslas_id.value));
       axios.post('api/programa/store', data, config).then(function (response) {
         if (response.status === 201) {
-          _this3.programa.pavadinimas = "";
-          _this3.programa.trukme_sav = "";
-          _this3.programa.kaina = "";
-          _this3.programa.fk_tikslas_id = "";
+          _this4.programa.pavadinimas = "";
+          _this4.programa.trukme_sav = "";
+          _this4.programa.kaina = "";
+          _this4.programa.fk_tikslas_id = "";
         }
       })["catch"](function (error) {
         console.log(error);
@@ -2824,7 +2839,7 @@ __webpack_require__.r(__webpack_exports__);
       this.rerender = !this.rerender;
     },
     updateProgram: function updateProgram(submitEvent, id) {
-      var _this4 = this;
+      var _this5 = this;
       if (submitEvent.target.elements.pavadinimas.value === '' || submitEvent.target.elements.trukme_sav.value === '' || submitEvent.target.elements.kaina.value === '') {
         alert("Ne visi duomenys ivesti");
       }
@@ -2835,9 +2850,9 @@ __webpack_require__.r(__webpack_exports__);
       };
       axios.put('/api/programa/' + id, data).then(function (response) {
         if (response.status === 201) {
-          _this4.programa.pavadinimas = "";
-          _this4.programa.trukme_sav = 0;
-          _this4.programa.kaina = 0;
+          _this5.programa.pavadinimas = "";
+          _this5.programa.trukme_sav = 0;
+          _this5.programa.kaina = 0;
         }
       })["catch"](function (error) {
         console.log(error);
@@ -2846,6 +2861,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   created: function created() {
+    this.checkIfAdmin();
     this.getProgramsList();
     this.getAimsList();
   }
@@ -2990,6 +3006,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      isAdmin: false,
       program: [],
       rerender: false,
       trainerData: [],
@@ -3004,36 +3021,47 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
-    getProgramData: function getProgramData(id) {
+    checkIfAdmin: function checkIfAdmin() {
       var _this = this;
+      axios.get('/api/user').then(function (response) {
+        _this.user = response.data;
+        if (_this.user.role === 0) {
+          _this.isAdmin = true;
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    getProgramData: function getProgramData(id) {
+      var _this2 = this;
       axios.get('/api/programa/' + id).then(function (response) {
-        _this.program = response.data;
+        _this2.program = response.data;
       })["catch"](function (error) {
         console.log(error);
       });
     },
     getProgramTrainers: function getProgramTrainers(id) {
-      var _this2 = this;
+      var _this3 = this;
       axios.get('/api/programa/' + id + '/treneriai').then(function (response) {
-        _this2.trainerData = response.data;
+        _this3.trainerData = response.data;
       })["catch"](function (error) {
         console.log(error);
       });
     },
     getProgramReviews: function getProgramReviews(id) {
-      var _this3 = this;
+      var _this4 = this;
       axios.get('/api/programa/' + id + '/reviews').then(function (response) {
-        _this3.reviewData = response.data;
-        _this3.reviewData.forEach(function (review) {
+        _this4.reviewData = response.data;
+        _this4.reviewData.forEach(function (review) {
           review.showEditForm = false;
         });
-        console.log(_this3.reviewData);
+        console.log(_this4.reviewData);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     addProgramReview: function addProgramReview(submitEvent) {
-      var _this4 = this;
+      var _this5 = this;
       if (submitEvent.target.elements.atsiliepimas.value === '' || submitEvent.target.elements.pradinis_kuno_svoris_kg.value === '' || submitEvent.target.elements.dabartinis_kuno_svoris_kg.value === '') {
         alert("Ne visi duomenys ivesti");
       }
@@ -3046,11 +3074,11 @@ __webpack_require__.r(__webpack_exports__);
       };
       axios.post('/api/programa/review/store', data).then(function (response) {
         if (response.status === 201) {
-          _this4.atsiliepimas.atsiliepimas = "";
-          _this4.atsiliepimas.pradinis_kuno_svoris_kg = 0;
-          _this4.atsiliepimas.dabartinis_kuno_svoris_kg = 0;
-          _this4.atsiliepimas.programos_tikslas = "";
-          _this4.atsiliepimas.programa_id = 1;
+          _this5.atsiliepimas.atsiliepimas = "";
+          _this5.atsiliepimas.pradinis_kuno_svoris_kg = 0;
+          _this5.atsiliepimas.dabartinis_kuno_svoris_kg = 0;
+          _this5.atsiliepimas.programos_tikslas = "";
+          _this5.atsiliepimas.programa_id = 1;
         }
       })["catch"](function (error) {
         console.log(error);
@@ -3076,7 +3104,7 @@ __webpack_require__.r(__webpack_exports__);
       this.rerender = !this.rerender;
     },
     updateProgramReview: function updateProgramReview(submitEvent, id) {
-      var _this5 = this;
+      var _this6 = this;
       if (submitEvent.target.elements.atsiliepimas.value === '' || submitEvent.target.elements.pradinis_kuno_svoris_kg.value === '' || submitEvent.target.elements.dabartinis_kuno_svoris_kg.value === '') {
         alert("Ne visi duomenys ivesti");
       }
@@ -3089,11 +3117,11 @@ __webpack_require__.r(__webpack_exports__);
       };
       axios.put('/api/programa/review/update/' + id, data).then(function (response) {
         if (response.status === 201) {
-          _this5.atsiliepimas.atsiliepimas = "";
-          _this5.atsiliepimas.pradinis_kuno_svoris_kg = 0;
-          _this5.atsiliepimas.dabartinis_kuno_svoris_kg = 0;
-          _this5.atsiliepimas.programos_tikslas = "";
-          _this5.atsiliepimas.programa_id = 1;
+          _this6.atsiliepimas.atsiliepimas = "";
+          _this6.atsiliepimas.pradinis_kuno_svoris_kg = 0;
+          _this6.atsiliepimas.dabartinis_kuno_svoris_kg = 0;
+          _this6.atsiliepimas.programos_tikslas = "";
+          _this6.atsiliepimas.programa_id = 1;
         }
       })["catch"](function (error) {
         console.log(error);
@@ -3103,6 +3131,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     this.id = this.$route.params.id;
+    this.checkIfAdmin();
     this.getProgramData(this.id);
     this.getProgramTrainers(this.id);
     this.getProgramReviews(this.id);
@@ -21668,6 +21697,7 @@ var render = function () {
     _c(
       "nav",
       {
+        key: _vm.rerender,
         staticClass: "navbar navbar-expand-lg navbar-light bg-dark",
         staticStyle: { padding: "35px 0 35px 0" },
       },
@@ -22521,125 +22551,135 @@ var render = function () {
     _c("header", [_c("Navbar"), _vm._v(" "), _vm._m(0)], 1),
     _vm._v(" "),
     _c("main", [
-      _c("div", [
-        _c(
-          "form",
-          {
-            staticClass: "mt-5",
-            staticStyle: { color: "white" },
-            attrs: { enctype: "multipart/form-data" },
-            on: {
-              submit: function ($event) {
-                $event.preventDefault()
-                return _vm.addProgram.apply(null, arguments)
-              },
-            },
-          },
-          [
-            _c("input", {
-              attrs: {
-                type: "text",
-                name: "pavadinimas",
-                placeholder: "pavadinimas",
-              },
-            }),
-            _vm._v(" "),
-            _c("input", {
-              attrs: {
-                type: "text",
-                name: "trukme_sav",
-                placeholder: "trukme_sav",
-              },
-            }),
-            _vm._v(" "),
-            _c("input", {
-              attrs: { type: "text", name: "kaina", placeholder: "kaina" },
-            }),
-            _vm._v(" "),
+      _vm.isAdmin
+        ? _c("div", [
             _c(
-              "select",
-              { attrs: { name: "fk_tikslas_id" } },
-              _vm._l(_vm.pagrindiniai_tikslai, function (tikslas, index) {
-                return _c("option", { domProps: { value: tikslas.id } }, [
-                  _vm._v(_vm._s(tikslas.tikslas)),
-                ])
-              }),
-              0
-            ),
-            _c("br"),
-            _vm._v(" "),
-            _c("input", {
-              attrs: {
-                type: "radio",
-                name: "programos_pagrindine_dirbama_raumenu_grupe",
-                value: "peciu_juosta",
-              },
-            }),
-            _vm._v(" "),
-            _c("label", { attrs: { for: "html" } }, [_vm._v("peciu_juosta")]),
-            _vm._v(" "),
-            _c("input", {
-              attrs: {
-                type: "radio",
-                name: "programos_pagrindine_dirbama_raumenu_grupe",
-                value: "rankos",
-              },
-            }),
-            _vm._v(" "),
-            _c("label", { attrs: { for: "css" } }, [_vm._v("rankos")]),
-            _vm._v(" "),
-            _c("input", {
-              attrs: {
-                type: "radio",
-                name: "programos_pagrindine_dirbama_raumenu_grupe",
-                value: "kojos",
-              },
-            }),
-            _vm._v(" "),
-            _c("label", { attrs: { for: "javascript" } }, [_vm._v("kojos")]),
-            _vm._v(" "),
-            _c("input", {
-              attrs: {
-                type: "radio",
-                name: "programos_pagrindine_dirbama_raumenu_grupe",
-                value: "sedmenys",
-              },
-            }),
-            _vm._v(" "),
-            _c("label", { attrs: { for: "javascript" } }, [_vm._v("sedmenys")]),
-            _vm._v(" "),
-            _c("input", {
-              attrs: {
-                type: "radio",
-                name: "programos_pagrindine_dirbama_raumenu_grupe",
-                value: "korpusas",
-              },
-            }),
-            _vm._v(" "),
-            _c("label", { attrs: { for: "javascript" } }, [_vm._v("korpusas")]),
-            _c("br"),
-            _vm._v(" "),
-            _c("input", {
-              attrs: {
-                type: "file",
-                name: "nuotrauka",
-                placeholder: "Nuotrauka",
-              },
-              on: { change: _vm.onImageChange },
-            }),
-            _c("br"),
-            _vm._v(" "),
-            _c(
-              "button",
+              "form",
               {
-                staticClass: "px-4 py-2 mt-2 w-100",
-                attrs: { type: "submit" },
+                staticClass: "mt-5",
+                staticStyle: { color: "white" },
+                attrs: { enctype: "multipart/form-data" },
+                on: {
+                  submit: function ($event) {
+                    $event.preventDefault()
+                    return _vm.addProgram.apply(null, arguments)
+                  },
+                },
               },
-              [_vm._v("Įterpti")]
+              [
+                _c("input", {
+                  attrs: {
+                    type: "text",
+                    name: "pavadinimas",
+                    placeholder: "pavadinimas",
+                  },
+                }),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    type: "text",
+                    name: "trukme_sav",
+                    placeholder: "trukme_sav",
+                  },
+                }),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: { type: "text", name: "kaina", placeholder: "kaina" },
+                }),
+                _vm._v(" "),
+                _c(
+                  "select",
+                  { attrs: { name: "fk_tikslas_id" } },
+                  _vm._l(_vm.pagrindiniai_tikslai, function (tikslas, index) {
+                    return _c("option", { domProps: { value: tikslas.id } }, [
+                      _vm._v(_vm._s(tikslas.tikslas)),
+                    ])
+                  }),
+                  0
+                ),
+                _c("br"),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    type: "radio",
+                    name: "programos_pagrindine_dirbama_raumenu_grupe",
+                    value: "peciu_juosta",
+                  },
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "html" } }, [
+                  _vm._v("peciu_juosta"),
+                ]),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    type: "radio",
+                    name: "programos_pagrindine_dirbama_raumenu_grupe",
+                    value: "rankos",
+                  },
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "css" } }, [_vm._v("rankos")]),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    type: "radio",
+                    name: "programos_pagrindine_dirbama_raumenu_grupe",
+                    value: "kojos",
+                  },
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "javascript" } }, [
+                  _vm._v("kojos"),
+                ]),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    type: "radio",
+                    name: "programos_pagrindine_dirbama_raumenu_grupe",
+                    value: "sedmenys",
+                  },
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "javascript" } }, [
+                  _vm._v("sedmenys"),
+                ]),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    type: "radio",
+                    name: "programos_pagrindine_dirbama_raumenu_grupe",
+                    value: "korpusas",
+                  },
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "javascript" } }, [
+                  _vm._v("korpusas"),
+                ]),
+                _c("br"),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    type: "file",
+                    name: "nuotrauka",
+                    placeholder: "Nuotrauka",
+                  },
+                  on: { change: _vm.onImageChange },
+                }),
+                _c("br"),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "px-4 py-2 mt-2 w-100",
+                    attrs: { type: "submit" },
+                  },
+                  [_vm._v("Įterpti")]
+                ),
+              ]
             ),
-          ]
-        ),
-      ]),
+          ])
+        : _vm._e(),
       _vm._v(" "),
       _c("div", { staticClass: "container" }, [
         _c(
@@ -22734,37 +22774,49 @@ var render = function () {
                         _vm._v(" "),
                         _c(
                           "router-link",
-                          { attrs: { to: "programa/" + program.id } },
-                          [_vm._v("GET IT NOW")]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "button",
                           {
                             staticClass: "py-2 px-3",
-                            staticStyle: { "background-color": "red" },
-                            on: {
-                              click: function ($event) {
-                                return _vm.deleteItem(program.id)
-                              },
+                            staticStyle: {
+                              "text-decoration": "none",
+                              color: "white",
+                              "background-color": "#4a8699",
                             },
+                            attrs: { to: "programa/" + program.id },
                           },
-                          [_vm._v("DELETE")]
+                          [_vm._v("GAUKITE DABAR")]
                         ),
                         _vm._v(" "),
-                        _c(
-                          "button",
-                          {
-                            staticClass: "py-2 px-3",
-                            staticStyle: { "background-color": "#548699" },
-                            on: {
-                              click: function ($event) {
-                                return _vm.openEditForm(index)
+                        _vm.isAdmin
+                          ? _c(
+                              "button",
+                              {
+                                staticClass: "py-2 px-3",
+                                staticStyle: { "background-color": "red" },
+                                on: {
+                                  click: function ($event) {
+                                    return _vm.deleteItem(program.id)
+                                  },
+                                },
                               },
-                            },
-                          },
-                          [_vm._v("REDAGUOTI")]
-                        ),
+                              [_vm._v("DELETE")]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.isAdmin
+                          ? _c(
+                              "button",
+                              {
+                                staticClass: "py-2 px-3",
+                                staticStyle: { "background-color": "#548699" },
+                                on: {
+                                  click: function ($event) {
+                                    return _vm.openEditForm(index)
+                                  },
+                                },
+                              },
+                              [_vm._v("REDAGUOTI")]
+                            )
+                          : _vm._e(),
                         _vm._v(" "),
                         program.showEditForm
                           ? _c(
@@ -22841,22 +22893,22 @@ var staticRenderFns = [
     return _c("div", { staticClass: "hero-image" }, [
       _c("div", { staticClass: "container" }, [
         _c("div", { staticClass: "hero-text pt-5" }, [
-          _c("h6", [_vm._v("YOU'RE MORE THAN JUST A MEMBER")]),
+          _c("h6", [_vm._v("TU DAUGIAU NEI PAPRASTAS NAUDOTOJAS")]),
           _vm._v(" "),
           _c("h1", { staticClass: "pb-5" }, [
-            _vm._v("\n                        Gym programs "),
+            _vm._v("\n                        Sporto programos "),
             _c("br"),
-            _vm._v("\n                        developed by "),
+            _vm._v("\n                        sukurtos paciu "),
             _c("br"),
             _vm._v(
-              "\n                        best minds.\n                    "
+              "\n                        talentingiausiu.\n                    "
             ),
           ]),
           _vm._v(" "),
           _c(
             "a",
             { staticClass: "py-3 px-4 mb-5", attrs: { href: "#programs" } },
-            [_vm._v("GET STARTED NOW")]
+            [_vm._v("PRADEK JAU DABAR")]
           ),
         ]),
       ]),
@@ -23140,19 +23192,23 @@ var render = function () {
                               [_vm._v("TRINTI")]
                             ),
                             _vm._v(" "),
-                            _c(
-                              "button",
-                              {
-                                staticClass: "py-2 px-3",
-                                staticStyle: { "background-color": "#548699" },
-                                on: {
-                                  click: function ($event) {
-                                    return _vm.openEditForm(index)
+                            _vm.isAdmin
+                              ? _c(
+                                  "button",
+                                  {
+                                    staticClass: "py-2 px-3",
+                                    staticStyle: {
+                                      "background-color": "#548699",
+                                    },
+                                    on: {
+                                      click: function ($event) {
+                                        return _vm.openEditForm(index)
+                                      },
+                                    },
                                   },
-                                },
-                              },
-                              [_vm._v("REDAGUOTI")]
-                            ),
+                                  [_vm._v("REDAGUOTI")]
+                                )
+                              : _vm._e(),
                             _vm._v(" "),
                             review.showEditForm
                               ? _c(

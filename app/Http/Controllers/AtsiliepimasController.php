@@ -37,10 +37,10 @@ class AtsiliepimasController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'atsiliepimas' => 'required|max:500',
-            'pradinis_kuno_svoris_kg' => 'required',
-            'dabartinis_kuno_svoris_kg' => 'required',
-            'programos_tikslas' => 'required',
+            'atsiliepimas' => ['required', 'max:500', 'min:3'],
+            'pradinis_kuno_svoris_kg' => ['required'],
+            'dabartinis_kuno_svoris_kg' => ['required'],
+            'programos_tikslas' => ['required', 'max:500', 'min:3'],
         ]);
 
         $newReview = new Atsiliepimas;
@@ -87,6 +87,13 @@ class AtsiliepimasController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $validatedData = $request->validate([
+            'atsiliepimas' => ['required', 'max:500', 'min:3'],
+            'pradinis_kuno_svoris_kg' => ['required'],
+            'dabartinis_kuno_svoris_kg' => ['required'],
+            'programos_tikslas' => ['required', 'max:500', 'min:3'],
+        ]);
+
         $existingReview = Atsiliepimas::find( $id );
 
         if( $existingReview ) {

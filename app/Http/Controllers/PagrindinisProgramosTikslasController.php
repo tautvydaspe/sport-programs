@@ -42,7 +42,7 @@ class PagrindinisProgramosTikslasController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'tikslas' => 'required',
+            'tikslas' => ['required', 'max:100', 'min:2'],
         ]);
 
         $newGoal = new PagrindinisProgramosTikslas;
@@ -84,6 +84,10 @@ class PagrindinisProgramosTikslasController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $validatedData = $request->validate([
+            'tikslas' => ['required', 'max:100', 'min:2'],
+        ]);
+
         $existingGoal = PagrindinisProgramosTikslas::find( $id );
 
         if( $existingGoal ) {

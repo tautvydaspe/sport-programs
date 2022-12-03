@@ -22,8 +22,12 @@ use App\Http\Controllers\PagrindinisProgramosTikslasController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::middleware('auth:sanctum')->get('/authenticated', function () {
-    return true;
+Route::middleware('auth:sanctum')->get('/authenticated', function (Request $request) {
+    if ($request->user('sanctum')) {
+        return true;
+    } else {
+        return false;
+    }
 });
 
 Route::get('/programos', [\App\Http\Controllers\ProgramController::class, 'index']);
