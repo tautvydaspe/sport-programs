@@ -23,7 +23,7 @@
                     <input type="text" name="trukme_sav" placeholder="trukme_sav" />
                     <input type="text" name="kaina" placeholder="kaina" />
                     <select name="fk_tikslas_id">
-                        <option v-for="(tikslas, index) in pagrindiniai_tikslai" :value="tikslas.id_pagrindinis_programos_tikslas">{{tikslas.tikslas}}</option>
+                        <option v-for="(tikslas, index) in pagrindiniai_tikslai" :value="tikslas.id">{{tikslas.tikslas}}</option>
                     </select><br>
                     <input type="radio" name="programos_pagrindine_dirbama_raumenu_grupe" value="peciu_juosta">
                     <label for="html">peciu_juosta</label>
@@ -40,7 +40,7 @@
                 </form>
             </div>
             <div class="container">
-                <div class="row d-flex justify-content-between my-5">
+                <div class="row d-flex justify-content-between my-5" :key="rerender">
                     <div class="col-12 col-lg-6 mb-5" style="color: white;" v-for="(program, index) in programs" :key="index">
                         <div id="programs" class="image-container program-card w-100">
                             <img
@@ -72,6 +72,13 @@
                                 <h4 class="my-3">${{program.kaina}} USD</h4>
                                 <router-link :to="`programa/${program.id}`">GET IT NOW</router-link>
                                 <button class="py-2 px-3" style="background-color: red;" @click="deleteItem(program.id)">DELETE</button>
+                                <button class="py-2 px-3" style="background-color: #548699;" @click="openEditForm(index)">REDAGUOTI</button>
+                                <form v-if="program.showEditForm" class="mb-5 mt-1" style="color: white;" @submit.prevent="updateProgram($event,program.id)">
+                                    <input style="width: 100%;" type="text" name="pavadinimas" :value=program.pavadinimas />
+                                    <input style="width: 100%;" type="text" name="trukme_sav" :value=program.trukme_sav />
+                                    <input style="width: 100%;" type="text" name="kaina" :value=program.kaina />
+                                    <button style="width: 100%; background-color: #4a8699" type="submit" class="px-4 py-2 mt-2">Redaguoti</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -99,6 +106,7 @@ export default {
     },
     data: function () {
         return {
+            rerender: false,
             programs: [],
             programa: {
                 pavadinimas: "",
@@ -117,7 +125,9 @@ export default {
             axios.get('/api/programos')
                 .then(response => {
                     this.programs = response.data
-                    console.log(response)
+                    this.programs.forEach(program => {
+                        program.showEditForm = false
+                    })
                 })
                 .catch(error => {
                     alert(error);
@@ -146,7 +156,7 @@ export default {
 
             data.append('pavadinimas', submitEvent.target.elements.pavadinimas.value);
             data.append('trukme_sav', parseInt(submitEvent.target.elements.trukme_sav.value));
-            data.append('kaina', parseInt(submitEvent.target.elements.kaina.value));
+            data.append('kaina', parseFloat(submitEvent.target.elements.kaina.value));
             data.append('programos_pagrindine_dirbama_raumenu_grupe', submitEvent.target.elements.programos_pagrindine_dirbama_raumenu_grupe.value);
             data.append('nuotrauka', this.nuotrauka);
             data.append('programos_pagrindine_dirbama_raumenu_grupe', this.categories_id);
@@ -183,6 +193,39 @@ export default {
         onImageChange(e) {
             console.log(e.target.files[0]);
             this.nuotrauka = e.target.files[0];
+        },
+        openEditForm(id) {
+            if(this.programs[id].showEditForm === false) {
+                this.programs[id].showEditForm = true
+            } else {
+                this.programs[id].showEditForm = false
+            }
+            this.rerender = !this.rerender
+        },
+        updateProgram(submitEvent, id) {
+            if (submitEvent.target.elements.pavadinimas.value === '' || submitEvent.target.elements.trukme_sav.value === '' || submitEvent.target.elements.kaina.value === '') {
+                alert("Ne visi duomenys ivesti");
+            }
+
+            let data = {
+                pavadinimas: submitEvent.target.elements.pavadinimas.value,
+                trukme_sav: parseInt(submitEvent.target.elements.trukme_sav.value),
+                kaina: parseFloat(submitEvent.target.elements.kaina.value),
+            }
+
+            axios.put('/api/programa/' + id, data)
+                .then(response => {
+                    if (response.status === 201) {
+                        this.programa.pavadinimas = ""
+                        this.programa.trukme_sav = 0
+                        this.programa.kaina = 0
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+
+            this.getProgramsList()
         },
     },
     created() {

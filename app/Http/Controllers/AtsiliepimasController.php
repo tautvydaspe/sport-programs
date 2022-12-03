@@ -87,7 +87,15 @@ class AtsiliepimasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $existingReview = Atsiliepimas::find( $id );
+
+        if( $existingReview ) {
+            $existingReview->atsiliepimas =  $request->get('atsiliepimas');
+            $existingReview->pradinis_kuno_svoris_kg = $request->get('pradinis_kuno_svoris_kg');
+            $existingReview->dabartinis_kuno_svoris_kg = $request->get('dabartinis_kuno_svoris_kg');
+            $existingReview->programos_tikslas = $request->get('programos_tikslas');
+            $existingReview->save();
+        }
     }
 
     /**
@@ -98,6 +106,12 @@ class AtsiliepimasController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $existingReview = Atsiliepimas::find($id);
+
+        if ($existingReview) {
+            $existingReview->delete();
+            return "Review successfully deleted.";
+        }
+        return "Review not found";
     }
 }

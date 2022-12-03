@@ -11003,3 +11003,8 @@ main select {
   background-color: #1584a7;
   color: white;
 }
+
+button {
+  border: none;
+  color: white;
+}

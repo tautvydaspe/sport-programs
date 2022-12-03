@@ -2121,6 +2121,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
@@ -2206,6 +2208,103 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -2216,42 +2315,275 @@ __webpack_require__.r(__webpack_exports__);
     return {
       user: null,
       users: [],
-      show: false
+      trainers: [],
+      goals: [],
+      show: false,
+      rerender: false,
+      vartotojas: {
+        name: "",
+        last_name: "",
+        main_goal: "",
+        phone_number: "",
+        password: 0,
+        password_confirmation: 0,
+        email: ""
+      },
+      treneris: {
+        vardas: "",
+        pavarde: "",
+        specializacija: "",
+        issilavinimas: ""
+      },
+      tikslas: {
+        tikslas: ""
+      }
     };
   },
   methods: {
-    logout: function logout() {
+    getUserData: function getUserData() {
       var _this = this;
-      axios.post('/api/logout').then(function () {
-        _this.$router.push({
-          name: "Home"
-        });
+      axios.get('/api/user').then(function (response) {
+        _this.user = response.data;
+        //console.log('USERIS')
+        // console.log(this.user)
+        if (_this.user.role === 1) {
+          _this.$router.push({
+            name: "Home"
+          });
+        } else {
+          _this.show = true;
+          axios.get('/api/users').then(function (response) {
+            _this.users = response.data;
+            _this.users.forEach(function (user) {
+              user.showEditForm = false;
+            });
+          });
+        }
       })["catch"](function (error) {
         alert(error);
       });
+    },
+    getTrainerData: function getTrainerData() {
+      var _this2 = this;
+      axios.get('/api/user').then(function (response) {
+        _this2.user = response.data;
+        console.log('USERIS');
+        console.log(_this2.user);
+        if (_this2.user.role === 1) {
+          _this2.$router.push({
+            name: "Home"
+          });
+        } else {
+          _this2.show = true;
+          axios.get('/api/trainers').then(function (response) {
+            _this2.trainers = response.data;
+            _this2.trainers.forEach(function (treneris) {
+              treneris.showEditForm = false;
+            });
+            console.log('TRENERIAI');
+            console.log(_this2.trainers);
+          });
+        }
+      })["catch"](function (error) {
+        alert(error);
+      });
+    },
+    getGoalData: function getGoalData() {
+      var _this3 = this;
+      axios.get('/api/user').then(function (response) {
+        _this3.user = response.data;
+        console.log('USERIS');
+        console.log(_this3.user);
+        if (_this3.user.role === 1) {
+          _this3.$router.push({
+            name: "Home"
+          });
+        } else {
+          _this3.show = true;
+          axios.get('/api/pagrindiniai_tikslai').then(function (response) {
+            _this3.goals = response.data;
+            _this3.goals.forEach(function (tikslas) {
+              tikslas.showEditForm = false;
+            });
+            console.log('TRENERIAI');
+            console.log(_this3.goals);
+          });
+        }
+      })["catch"](function (error) {
+        alert(error);
+      });
+    },
+    addUser: function addUser(submitEvent) {
+      if (submitEvent.target.elements.name.value === '' || submitEvent.target.elements.last_name.value === '' || submitEvent.target.elements.main_goal.value === '' || submitEvent.target.elements.phone_number.value === '' || submitEvent.target.elements.email.value === '' || submitEvent.target.elements.password.value === '' || submitEvent.target.elements.password_confirmation.value === '') {
+        alert("Ne visi duomenys ivesti");
+      }
+      var data = {
+        name: submitEvent.target.elements.name.value,
+        last_name: submitEvent.target.elements.last_name.value,
+        main_goal: submitEvent.target.elements.main_goal.value,
+        phone_number: submitEvent.target.elements.phone_number.value,
+        email: submitEvent.target.elements.email.value,
+        password: submitEvent.target.elements.password.value,
+        password_confirmation: submitEvent.target.elements.password_confirmation.value
+      };
+      axios.post('/api/user/store', data).then(function (response) {
+        if (response.status === 201) {
+          //
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getUserData(this.id);
+    },
+    deleteUser: function deleteUser(id) {
+      axios["delete"]('/api/user/delete/' + id).then(function (response) {
+        if (response.status === 200) {
+          //
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getUserData();
+    },
+    openEditForm: function openEditForm(id) {
+      if (this.users[id].showEditForm === false) {
+        this.users[id].showEditForm = true;
+      } else {
+        this.users[id].showEditForm = false;
+      }
+      this.rerender = !this.rerender;
+    },
+    updateUser: function updateUser(submitEvent, id) {
+      if (submitEvent.target.elements.name.value === '' || submitEvent.target.elements.last_name.value === '' || submitEvent.target.elements.main_goal.value === '' || submitEvent.target.elements.phone_number.value === '' || submitEvent.target.elements.email.value === '') {
+        alert("Ne visi duomenys ivesti");
+      }
+      var data = {
+        name: submitEvent.target.elements.name.value,
+        last_name: submitEvent.target.elements.last_name.value,
+        main_goal: submitEvent.target.elements.main_goal.value,
+        phone_number: submitEvent.target.elements.phone_number.value,
+        email: submitEvent.target.elements.email.value
+      };
+      axios.put('/api/user/update/' + id, data).then(function (response) {
+        if (response.status === 201) {
+          //
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getUserData();
+    },
+    addTrainer: function addTrainer(submitEvent) {
+      if (submitEvent.target.elements.vardas.value === '' || submitEvent.target.elements.pavarde.value === '' || submitEvent.target.elements.specializacija.value === '' || submitEvent.target.elements.issilavinimas.value === '') {
+        alert("Ne visi duomenys ivesti");
+      }
+      var data = {
+        vardas: submitEvent.target.elements.vardas.value,
+        pavarde: submitEvent.target.elements.pavarde.value,
+        specializacija: submitEvent.target.elements.specializacija.value,
+        issilavinimas: submitEvent.target.elements.issilavinimas.value
+      };
+      axios.post('/api/treneris/store', data).then(function (response) {
+        if (response.status === 201) {
+          //
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getTrainerData();
+    },
+    deleteTrainer: function deleteTrainer(id) {
+      axios["delete"]('/api/treneris/delete/' + id).then(function (response) {
+        if (response.status === 200) {
+          //
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getTrainerData();
+    },
+    openTrainerEditForm: function openTrainerEditForm(id) {
+      if (this.trainers[id].showEditForm === false) {
+        this.trainers[id].showEditForm = true;
+      } else {
+        this.trainers[id].showEditForm = false;
+      }
+      this.rerender = !this.rerender;
+    },
+    updateTrainer: function updateTrainer(submitEvent, id) {
+      if (submitEvent.target.elements.vardas.value === '' || submitEvent.target.elements.pavarde.value === '' || submitEvent.target.elements.specializacija.value === '' || submitEvent.target.elements.issilavinimas.value === '') {
+        alert("Ne visi duomenys ivesti");
+      }
+      var data = {
+        vardas: submitEvent.target.elements.vardas.value,
+        pavarde: submitEvent.target.elements.pavarde.value,
+        specializacija: submitEvent.target.elements.specializacija.value,
+        issilavinimas: submitEvent.target.elements.issilavinimas.value
+      };
+      axios.put('/api/treneris/update/' + id, data).then(function (response) {
+        if (response.status === 201) {
+          //
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getTrainerData();
+    },
+    addGoal: function addGoal(submitEvent) {
+      if (submitEvent.target.elements.tikslas.value === '') {
+        alert("Ne visi duomenys ivesti");
+      }
+      var data = {
+        tikslas: submitEvent.target.elements.tikslas.value
+      };
+      axios.post('/api/pagrindinis_tikslas/store', data).then(function (response) {
+        if (response.status === 201) {
+          //
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getGoalData();
+    },
+    deleteGoal: function deleteGoal(id) {
+      axios["delete"]('/api/pagrindinis_tikslas/delete/' + id).then(function (response) {
+        if (response.status === 200) {
+          //
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getGoalData();
+    },
+    openGoalEditForm: function openGoalEditForm(id) {
+      if (this.goals[id].showEditForm === false) {
+        this.goals[id].showEditForm = true;
+      } else {
+        this.goals[id].showEditForm = false;
+      }
+      this.rerender = !this.rerender;
+    },
+    updateGoal: function updateGoal(submitEvent, id) {
+      if (submitEvent.target.elements.tikslas.value === '') {
+        alert("Ne visi duomenys ivesti");
+      }
+      var data = {
+        tikslas: submitEvent.target.elements.tikslas.value
+      };
+      axios.put('/api/pagrindinis_tikslas/update/' + id, data).then(function (response) {
+        if (response.status === 201) {
+          //
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getGoalData();
     }
   },
   mounted: function mounted() {
-    var _this2 = this;
-    axios.get('/api/user').then(function (response) {
-      _this2.user = response.data;
-      console.log('USERIS');
-      console.log(_this2.user);
-      if (_this2.user.role === 1) {
-        _this2.$router.push({
-          name: "Home"
-        });
-      } else {
-        _this2.show = true;
-        axios.get('/api/users').then(function (response) {
-          _this2.users = response.data;
-          console.log('USERIAI');
-          console.log(_this2.users);
-        });
-      }
-    })["catch"](function (error) {
-      alert(error);
-    });
+    this.getUserData();
+    this.getTrainerData();
+    this.getGoalData();
   }
 });
 
@@ -2389,6 +2721,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -2397,6 +2736,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      rerender: false,
       programs: [],
       programa: {
         pavadinimas: "",
@@ -2415,7 +2755,9 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
       axios.get('/api/programos').then(function (response) {
         _this.programs = response.data;
-        console.log(response);
+        _this.programs.forEach(function (program) {
+          program.showEditForm = false;
+        });
       })["catch"](function (error) {
         alert(error);
       });
@@ -2442,7 +2784,7 @@ __webpack_require__.r(__webpack_exports__);
       var data = new FormData();
       data.append('pavadinimas', submitEvent.target.elements.pavadinimas.value);
       data.append('trukme_sav', parseInt(submitEvent.target.elements.trukme_sav.value));
-      data.append('kaina', parseInt(submitEvent.target.elements.kaina.value));
+      data.append('kaina', parseFloat(submitEvent.target.elements.kaina.value));
       data.append('programos_pagrindine_dirbama_raumenu_grupe', submitEvent.target.elements.programos_pagrindine_dirbama_raumenu_grupe.value);
       data.append('nuotrauka', this.nuotrauka);
       data.append('programos_pagrindine_dirbama_raumenu_grupe', this.categories_id);
@@ -2472,6 +2814,35 @@ __webpack_require__.r(__webpack_exports__);
     onImageChange: function onImageChange(e) {
       console.log(e.target.files[0]);
       this.nuotrauka = e.target.files[0];
+    },
+    openEditForm: function openEditForm(id) {
+      if (this.programs[id].showEditForm === false) {
+        this.programs[id].showEditForm = true;
+      } else {
+        this.programs[id].showEditForm = false;
+      }
+      this.rerender = !this.rerender;
+    },
+    updateProgram: function updateProgram(submitEvent, id) {
+      var _this4 = this;
+      if (submitEvent.target.elements.pavadinimas.value === '' || submitEvent.target.elements.trukme_sav.value === '' || submitEvent.target.elements.kaina.value === '') {
+        alert("Ne visi duomenys ivesti");
+      }
+      var data = {
+        pavadinimas: submitEvent.target.elements.pavadinimas.value,
+        trukme_sav: parseInt(submitEvent.target.elements.trukme_sav.value),
+        kaina: parseFloat(submitEvent.target.elements.kaina.value)
+      };
+      axios.put('/api/programa/' + id, data).then(function (response) {
+        if (response.status === 201) {
+          _this4.programa.pavadinimas = "";
+          _this4.programa.trukme_sav = 0;
+          _this4.programa.kaina = 0;
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getProgramsList();
     }
   },
   created: function created() {
@@ -2600,6 +2971,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -2609,6 +2991,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       program: [],
+      rerender: false,
       trainerData: [],
       reviewData: [],
       atsiliepimas: {
@@ -2641,6 +3024,10 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
       axios.get('/api/programa/' + id + '/reviews').then(function (response) {
         _this3.reviewData = response.data;
+        _this3.reviewData.forEach(function (review) {
+          review.showEditForm = false;
+        });
+        console.log(_this3.reviewData);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2657,16 +3044,56 @@ __webpack_require__.r(__webpack_exports__);
         programos_tikslas: submitEvent.target.elements.programos_tikslas.value,
         programa_id: this.id
       };
-      console.log('aspinfauohfuoasf');
-      console.log(data);
       axios.post('/api/programa/review/store', data).then(function (response) {
-        console.log("YEY");
         if (response.status === 201) {
           _this4.atsiliepimas.atsiliepimas = "";
           _this4.atsiliepimas.pradinis_kuno_svoris_kg = 0;
           _this4.atsiliepimas.dabartinis_kuno_svoris_kg = 0;
           _this4.atsiliepimas.programos_tikslas = "";
           _this4.atsiliepimas.programa_id = 1;
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getProgramReviews(this.id);
+    },
+    deleteReview: function deleteReview(id) {
+      axios["delete"]('/api/programa/review/delete/' + id).then(function (response) {
+        if (response.status === 200) {
+          //Sitoje vietoje reiketu daryt emita
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getProgramReviews(this.id);
+    },
+    openEditForm: function openEditForm(id) {
+      if (this.reviewData[id].showEditForm === false) {
+        this.reviewData[id].showEditForm = true;
+      } else {
+        this.reviewData[id].showEditForm = false;
+      }
+      this.rerender = !this.rerender;
+    },
+    updateProgramReview: function updateProgramReview(submitEvent, id) {
+      var _this5 = this;
+      if (submitEvent.target.elements.atsiliepimas.value === '' || submitEvent.target.elements.pradinis_kuno_svoris_kg.value === '' || submitEvent.target.elements.dabartinis_kuno_svoris_kg.value === '') {
+        alert("Ne visi duomenys ivesti");
+      }
+      var data = {
+        atsiliepimas: submitEvent.target.elements.atsiliepimas.value,
+        pradinis_kuno_svoris_kg: parseFloat(submitEvent.target.elements.pradinis_kuno_svoris_kg.value),
+        dabartinis_kuno_svoris_kg: parseFloat(submitEvent.target.elements.dabartinis_kuno_svoris_kg.value),
+        programos_tikslas: submitEvent.target.elements.programos_tikslas.value,
+        programa_id: this.id
+      };
+      axios.put('/api/programa/review/update/' + id, data).then(function (response) {
+        if (response.status === 201) {
+          _this5.atsiliepimas.atsiliepimas = "";
+          _this5.atsiliepimas.pradinis_kuno_svoris_kg = 0;
+          _this5.atsiliepimas.dabartinis_kuno_svoris_kg = 0;
+          _this5.atsiliepimas.programos_tikslas = "";
+          _this5.atsiliepimas.programa_id = 1;
         }
       })["catch"](function (error) {
         console.log(error);
@@ -21245,115 +21672,117 @@ var render = function () {
         staticStyle: { padding: "35px 0 35px 0" },
       },
       [
-        _c("a", { attrs: { href: "/" } }, [
-          _c("div", [
-            _c("div", { staticStyle: { width: "3rem" } }, [
-              _c(
-                "svg",
-                {
-                  staticClass: "w-6 h-6",
-                  attrs: {
-                    xmlns: "http://www.w3.org/2000/svg",
-                    fill: "none",
-                    viewBox: "0 0 25 25",
-                    "stroke-width": "1.5",
-                    stroke: "white",
-                  },
-                },
-                [
-                  _c("path", {
+        _c("div", { staticClass: "container" }, [
+          _c("a", { attrs: { href: "/" } }, [
+            _c("div", [
+              _c("div", { staticStyle: { width: "3rem" } }, [
+                _c(
+                  "svg",
+                  {
+                    staticClass: "w-6 h-6",
                     attrs: {
-                      "stroke-linecap": "round",
-                      "stroke-linejoin": "round",
-                      d: "M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z",
+                      xmlns: "http://www.w3.org/2000/svg",
+                      fill: "none",
+                      viewBox: "0 0 25 25",
+                      "stroke-width": "1.5",
+                      stroke: "white",
                     },
-                  }),
-                ]
-              ),
+                  },
+                  [
+                    _c("path", {
+                      attrs: {
+                        "stroke-linecap": "round",
+                        "stroke-linejoin": "round",
+                        d: "M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z",
+                      },
+                    }),
+                  ]
+                ),
+              ]),
             ]),
           ]),
-        ]),
-        _vm._v(" "),
-        _vm._m(0),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "collapse navbar-collapse",
-            attrs: { id: "navbarNav" },
-          },
-          [
-            _c("ul", { staticClass: "navbar-nav" }, [
-              _vm._m(1),
-              _vm._v(" "),
-              _vm._m(2),
-              _vm._v(" "),
-              _vm._m(3),
-              _vm._v(" "),
-              _vm._m(4),
-              _vm._v(" "),
-              _vm.showLogout === false
-                ? _c("li", { staticClass: "nav-item" }, [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "menu-item",
-                        staticStyle: { color: "white" },
-                        attrs: { href: "/login" },
-                      },
-                      [_vm._v("Login")]
-                    ),
-                  ])
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.showLogout === false
-                ? _c("li", { staticClass: "nav-item" }, [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "menu-item",
-                        staticStyle: { color: "white" },
-                        attrs: { href: "/register" },
-                      },
-                      [_vm._v("Register")]
-                    ),
-                  ])
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.isAdmin
-                ? _c("li", { staticClass: "nav-item" }, [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "menu-item",
-                        staticStyle: { color: "white" },
-                        attrs: { href: "/admin" },
-                      },
-                      [_vm._v("Admin")]
-                    ),
-                  ])
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.showLogout
-                ? _c("li", { staticClass: "nav-item" }, [
-                    _c(
-                      "button",
-                      {
-                        staticClass: "menu-item",
-                        on: {
-                          click: function ($event) {
-                            $event.preventDefault()
-                            return _vm.logout.apply(null, arguments)
+          _vm._v(" "),
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "collapse navbar-collapse",
+              attrs: { id: "navbarNav" },
+            },
+            [
+              _c("ul", { staticClass: "navbar-nav" }, [
+                _vm._m(1),
+                _vm._v(" "),
+                _vm._m(2),
+                _vm._v(" "),
+                _vm._m(3),
+                _vm._v(" "),
+                _vm._m(4),
+                _vm._v(" "),
+                _vm.showLogout === false
+                  ? _c("li", { staticClass: "nav-item" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "menu-item",
+                          staticStyle: { color: "white" },
+                          attrs: { href: "/login" },
+                        },
+                        [_vm._v("Login")]
+                      ),
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.showLogout === false
+                  ? _c("li", { staticClass: "nav-item" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "menu-item",
+                          staticStyle: { color: "white" },
+                          attrs: { href: "/register" },
+                        },
+                        [_vm._v("Register")]
+                      ),
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.isAdmin
+                  ? _c("li", { staticClass: "nav-item" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "menu-item",
+                          staticStyle: { color: "white" },
+                          attrs: { href: "/admin" },
+                        },
+                        [_vm._v("Admin")]
+                      ),
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.showLogout
+                  ? _c("li", { staticClass: "nav-item" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "menu-item",
+                          on: {
+                            click: function ($event) {
+                              $event.preventDefault()
+                              return _vm.logout.apply(null, arguments)
+                            },
                           },
                         },
-                      },
-                      [_vm._v("Logout")]
-                    ),
-                  ])
-                : _vm._e(),
-            ]),
-          ]
-        ),
+                        [_vm._v("Logout")]
+                      ),
+                    ])
+                  : _vm._e(),
+              ]),
+            ]
+          ),
+        ]),
       ]
     ),
   ])
@@ -21471,42 +21900,514 @@ var render = function () {
     [
       _c("Navbar"),
       _vm._v(" "),
-      _c("table", { staticClass: "m-5" }, [
-        _vm._m(0),
+      _c("div", { key: _vm.rerender, staticClass: "container" }, [
+        _c("h2", { staticClass: "text-white mb-3 mt-4" }, [
+          _vm._v("Vartotojai"),
+        ]),
+        _vm._v(" "),
+        _c("table", [
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "tbody",
+            _vm._l(_vm.users, function (vartotojas, index) {
+              return _c("tr", [
+                _c("td", [_vm._v(_vm._s(vartotojas.name))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(vartotojas.last_name))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(vartotojas.main_goal))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(vartotojas.email))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(vartotojas.phone_number))]),
+                _vm._v(" "),
+                _c("td", [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "w-100",
+                      staticStyle: { "background-color": "red" },
+                      on: {
+                        click: function ($event) {
+                          return _vm.deleteUser(vartotojas.id)
+                        },
+                      },
+                    },
+                    [_vm._v("Trinti")]
+                  ),
+                ]),
+                _vm._v(" "),
+                _c("td", [
+                  vartotojas.showEditForm === false
+                    ? _c(
+                        "button",
+                        {
+                          staticClass: "w-100",
+                          staticStyle: { "background-color": "#4a8699" },
+                          on: {
+                            click: function ($event) {
+                              return _vm.openEditForm(index)
+                            },
+                          },
+                        },
+                        [_vm._v("Redaguoti")]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  vartotojas.showEditForm
+                    ? _c(
+                        "form",
+                        {
+                          staticClass: "mb-5 mt-1",
+                          staticStyle: { color: "white" },
+                          on: {
+                            submit: function ($event) {
+                              $event.preventDefault()
+                              return _vm.updateUser($event, vartotojas.id)
+                            },
+                          },
+                        },
+                        [
+                          _c("input", {
+                            attrs: { type: "text", name: "name" },
+                            domProps: { value: vartotojas.name },
+                          }),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c("input", {
+                            attrs: { type: "text", name: "last_name" },
+                            domProps: { value: vartotojas.last_name },
+                          }),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c("input", {
+                            attrs: { type: "text", name: "main_goal" },
+                            domProps: { value: vartotojas.main_goal },
+                          }),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c("input", {
+                            attrs: { type: "text", name: "phone_number" },
+                            domProps: { value: vartotojas.phone_number },
+                          }),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c("input", {
+                            attrs: { type: "text", name: "email" },
+                            domProps: { value: vartotojas.email },
+                          }),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "px-4 py-2 mt-2",
+                              staticStyle: {
+                                width: "100%",
+                                "background-color": "#4a8699",
+                              },
+                              attrs: { type: "submit" },
+                            },
+                            [_vm._v("Redaguoti")]
+                          ),
+                        ]
+                      )
+                    : _vm._e(),
+                ]),
+              ])
+            }),
+            0
+          ),
+        ]),
+        _vm._v(" "),
+        _c("h4", { staticClass: "text-white mt-5 mb-2" }, [
+          _vm._v("Pridekite vartotoja"),
+        ]),
         _vm._v(" "),
         _c(
-          "tbody",
-          _vm._l(_vm.users, function (vartotojas) {
-            return _c("tr", [
-              _c("td", [_vm._v(_vm._s(vartotojas.name))]),
-              _vm._v(" "),
-              _c("td", [_vm._v(_vm._s(vartotojas.last_name))]),
-              _vm._v(" "),
-              _c("td", [_vm._v(_vm._s(vartotojas.main_goal))]),
-              _vm._v(" "),
-              _c("td", [_vm._v(_vm._s(vartotojas.email))]),
-              _vm._v(" "),
-              _c("td", [_vm._v(_vm._s(vartotojas.phone_number))]),
-              _vm._v(" "),
-              _vm._m(1, true),
-            ])
-          }),
-          0
-        ),
-      ]),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          on: {
-            click: function ($event) {
-              $event.preventDefault()
-              return _vm.logout.apply(null, arguments)
+          "form",
+          {
+            staticClass: "mb-5",
+            staticStyle: { color: "white" },
+            on: {
+              submit: function ($event) {
+                $event.preventDefault()
+                return _vm.addUser($event)
+              },
             },
           },
-        },
-        [_vm._v("Logout")]
-      ),
+          [
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: { type: "text", name: "name", placeholder: "Vardas" },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: {
+                type: "text",
+                name: "last_name",
+                placeholder: "Pavarde",
+              },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: {
+                type: "text",
+                name: "main_goal",
+                placeholder: "Pagrindinis tikslas",
+              },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: {
+                type: "text",
+                name: "phone_number",
+                placeholder: "Telefono numeris",
+              },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: { type: "text", name: "email", placeholder: "El. pastas" },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: {
+                type: "text",
+                name: "password",
+                placeholder: "Slaptazodis",
+              },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: {
+                placeholder: "Pakartokite slaptazodi",
+                type: "password",
+                name: "password_confirmation",
+              },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "px-4 py-2 mt-2",
+                staticStyle: { "background-color": "#4a8699" },
+                attrs: { type: "submit" },
+              },
+              [_vm._v("Įterpti")]
+            ),
+          ]
+        ),
+        _vm._v(" "),
+        _c("h2", { staticClass: "text-white mb-3 mt-5" }, [
+          _vm._v("Treneriai"),
+        ]),
+        _vm._v(" "),
+        _c("table", [
+          _vm._m(1),
+          _vm._v(" "),
+          _c(
+            "tbody",
+            _vm._l(_vm.trainers, function (treneris, index) {
+              return _c("tr", [
+                _c("td", [_vm._v(_vm._s(treneris.vardas))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(treneris.pavarde))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(treneris.specializacija))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(treneris.issilavinimas))]),
+                _vm._v(" "),
+                _c("td", [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "w-100",
+                      staticStyle: { "background-color": "red" },
+                      on: {
+                        click: function ($event) {
+                          return _vm.deleteTrainer(treneris.id)
+                        },
+                      },
+                    },
+                    [_vm._v("Trinti")]
+                  ),
+                ]),
+                _vm._v(" "),
+                _c("td", [
+                  treneris.showEditForm === false
+                    ? _c(
+                        "button",
+                        {
+                          staticClass: "w-100",
+                          staticStyle: { "background-color": "#4a8699" },
+                          on: {
+                            click: function ($event) {
+                              return _vm.openTrainerEditForm(index)
+                            },
+                          },
+                        },
+                        [_vm._v("Redaguoti")]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  treneris.showEditForm
+                    ? _c(
+                        "form",
+                        {
+                          staticClass: "mb-5 mt-1",
+                          staticStyle: { color: "white" },
+                          on: {
+                            submit: function ($event) {
+                              $event.preventDefault()
+                              return _vm.updateTrainer($event, treneris.id)
+                            },
+                          },
+                        },
+                        [
+                          _c("input", {
+                            attrs: { type: "text", name: "vardas" },
+                            domProps: { value: treneris.vardas },
+                          }),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c("input", {
+                            attrs: { type: "text", name: "pavarde" },
+                            domProps: { value: treneris.pavarde },
+                          }),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c("input", {
+                            attrs: { type: "text", name: "specializacija" },
+                            domProps: { value: treneris.specializacija },
+                          }),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c("input", {
+                            attrs: { type: "text", name: "issilavinimas" },
+                            domProps: { value: treneris.issilavinimas },
+                          }),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "px-4 py-2 mt-2",
+                              staticStyle: {
+                                width: "100%",
+                                "background-color": "#4a8699",
+                              },
+                              attrs: { type: "submit" },
+                            },
+                            [_vm._v("Redaguoti")]
+                          ),
+                        ]
+                      )
+                    : _vm._e(),
+                ]),
+              ])
+            }),
+            0
+          ),
+        ]),
+        _vm._v(" "),
+        _c("h4", { staticClass: "text-white mt-5 mb-2" }, [
+          _vm._v("Pridekite treneri"),
+        ]),
+        _vm._v(" "),
+        _c(
+          "form",
+          {
+            staticClass: "mb-5",
+            staticStyle: { color: "white" },
+            on: {
+              submit: function ($event) {
+                $event.preventDefault()
+                return _vm.addTrainer($event)
+              },
+            },
+          },
+          [
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: { type: "text", name: "vardas", placeholder: "Vardas" },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: { type: "text", name: "pavarde", placeholder: "Pavarde" },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: {
+                type: "text",
+                name: "specializacija",
+                placeholder: "Specializacija",
+              },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: {
+                type: "text",
+                name: "issilavinimas",
+                placeholder: "Issilavinimas",
+              },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "px-4 py-2 mt-2",
+                staticStyle: { "background-color": "#4a8699" },
+                attrs: { type: "submit" },
+              },
+              [_vm._v("Įterpti")]
+            ),
+          ]
+        ),
+        _vm._v(" "),
+        _c("h2", { staticClass: "text-white mb-3 mt-5" }, [
+          _vm._v("Galimi tikslai"),
+        ]),
+        _vm._v(" "),
+        _c("table", [
+          _vm._m(2),
+          _vm._v(" "),
+          _c(
+            "tbody",
+            _vm._l(_vm.goals, function (goal, index) {
+              return _c("tr", [
+                _c("td", [_vm._v(_vm._s(goal.tikslas))]),
+                _vm._v(" "),
+                _c("td", [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "w-100",
+                      staticStyle: { "background-color": "red" },
+                      on: {
+                        click: function ($event) {
+                          return _vm.deleteGoal(goal.id)
+                        },
+                      },
+                    },
+                    [_vm._v("Trinti")]
+                  ),
+                ]),
+                _vm._v(" "),
+                _c("td", [
+                  goal.showEditForm === false
+                    ? _c(
+                        "button",
+                        {
+                          staticClass: "w-100",
+                          staticStyle: { "background-color": "#4a8699" },
+                          on: {
+                            click: function ($event) {
+                              return _vm.openGoalEditForm(index)
+                            },
+                          },
+                        },
+                        [_vm._v("Redaguoti")]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  goal.showEditForm
+                    ? _c(
+                        "form",
+                        {
+                          staticClass: "mb-5 mt-1",
+                          staticStyle: { color: "white" },
+                          on: {
+                            submit: function ($event) {
+                              $event.preventDefault()
+                              return _vm.updateGoal($event, goal.id)
+                            },
+                          },
+                        },
+                        [
+                          _c("input", {
+                            attrs: { type: "text", name: "tikslas" },
+                            domProps: { value: goal.tikslas },
+                          }),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "px-4 py-2 mt-2",
+                              staticStyle: {
+                                width: "100%",
+                                "background-color": "#4a8699",
+                              },
+                              attrs: { type: "submit" },
+                            },
+                            [_vm._v("Redaguoti")]
+                          ),
+                        ]
+                      )
+                    : _vm._e(),
+                ]),
+              ])
+            }),
+            0
+          ),
+        ]),
+        _vm._v(" "),
+        _c("h4", { staticClass: "text-white mt-5 mb-2" }, [
+          _vm._v("Pridekite tiksla"),
+        ]),
+        _vm._v(" "),
+        _c(
+          "form",
+          {
+            staticClass: "mb-5",
+            staticStyle: { color: "white" },
+            on: {
+              submit: function ($event) {
+                $event.preventDefault()
+                return _vm.addGoal($event)
+              },
+            },
+          },
+          [
+            _c("input", {
+              staticClass: "w-25 mb-1",
+              attrs: { type: "text", name: "tikslas", placeholder: "Tikslas" },
+            }),
+            _c("br"),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "px-4 py-2 mt-2",
+                staticStyle: { "background-color": "#4a8699" },
+                attrs: { type: "submit" },
+              },
+              [_vm._v("Įterpti")]
+            ),
+          ]
+        ),
+      ]),
     ],
     1
   )
@@ -21529,6 +22430,8 @@ var staticRenderFns = [
         _c("th", [_vm._v("Telefono numeris")]),
         _vm._v(" "),
         _c("th", [_vm._v("Trinti")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Redaguoti")]),
       ]),
     ])
   },
@@ -21536,8 +22439,34 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("td", [
-      _c("button", { staticClass: "btn btn-danger" }, [_vm._v("Trinti")]),
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("Vardas")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Pavarde")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Specializacija")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Issilavinimas")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Trinti")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Redaguoti")]),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("Tikslas")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Trinti")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Redaguoti")]),
+      ]),
     ])
   },
 ]
@@ -21631,15 +22560,9 @@ var render = function () {
               "select",
               { attrs: { name: "fk_tikslas_id" } },
               _vm._l(_vm.pagrindiniai_tikslai, function (tikslas, index) {
-                return _c(
-                  "option",
-                  {
-                    domProps: {
-                      value: tikslas.id_pagrindinis_programos_tikslas,
-                    },
-                  },
-                  [_vm._v(_vm._s(tikslas.tikslas))]
-                )
+                return _c("option", { domProps: { value: tikslas.id } }, [
+                  _vm._v(_vm._s(tikslas.tikslas)),
+                ])
               }),
               0
             ),
@@ -21721,7 +22644,10 @@ var render = function () {
       _c("div", { staticClass: "container" }, [
         _c(
           "div",
-          { staticClass: "row d-flex justify-content-between my-5" },
+          {
+            key: _vm.rerender,
+            staticClass: "row d-flex justify-content-between my-5",
+          },
           _vm._l(_vm.programs, function (program, index) {
             return _c(
               "div",
@@ -21825,6 +22751,68 @@ var render = function () {
                           },
                           [_vm._v("DELETE")]
                         ),
+                        _vm._v(" "),
+                        _c(
+                          "button",
+                          {
+                            staticClass: "py-2 px-3",
+                            staticStyle: { "background-color": "#548699" },
+                            on: {
+                              click: function ($event) {
+                                return _vm.openEditForm(index)
+                              },
+                            },
+                          },
+                          [_vm._v("REDAGUOTI")]
+                        ),
+                        _vm._v(" "),
+                        program.showEditForm
+                          ? _c(
+                              "form",
+                              {
+                                staticClass: "mb-5 mt-1",
+                                staticStyle: { color: "white" },
+                                on: {
+                                  submit: function ($event) {
+                                    $event.preventDefault()
+                                    return _vm.updateProgram($event, program.id)
+                                  },
+                                },
+                              },
+                              [
+                                _c("input", {
+                                  staticStyle: { width: "100%" },
+                                  attrs: { type: "text", name: "pavadinimas" },
+                                  domProps: { value: program.pavadinimas },
+                                }),
+                                _vm._v(" "),
+                                _c("input", {
+                                  staticStyle: { width: "100%" },
+                                  attrs: { type: "text", name: "trukme_sav" },
+                                  domProps: { value: program.trukme_sav },
+                                }),
+                                _vm._v(" "),
+                                _c("input", {
+                                  staticStyle: { width: "100%" },
+                                  attrs: { type: "text", name: "kaina" },
+                                  domProps: { value: program.kaina },
+                                }),
+                                _vm._v(" "),
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "px-4 py-2 mt-2",
+                                    staticStyle: {
+                                      width: "100%",
+                                      "background-color": "#4a8699",
+                                    },
+                                    attrs: { type: "submit" },
+                                  },
+                                  [_vm._v("Redaguoti")]
+                                ),
+                              ]
+                            )
+                          : _vm._e(),
                       ],
                       1
                     ),
@@ -22028,7 +23016,7 @@ var render = function () {
       _c("Navbar"),
       _vm._v(" "),
       _vm.program
-        ? _c("div", [
+        ? _c("div", { staticClass: "container" }, [
             _c(
               "div",
               { staticClass: "jumbotron text-white" },
@@ -22047,15 +23035,17 @@ var render = function () {
                 _vm._v(" "),
                 _c("hr", { staticClass: "my-4" }),
                 _vm._v(" "),
-                _c("p", [_vm._v("Price: " + _vm._s(_vm.program.pavadinimas))]),
+                _c("p", [_vm._v("Kaina: " + _vm._s(_vm.program.pavadinimas))]),
                 _vm._v(" "),
                 _c("p", { staticClass: "mb-4" }, [
-                  _vm._v("Length (weeks): " + _vm._s(_vm.program.trukme_sav)),
+                  _vm._v(
+                    "Trukme (savaitemis): " + _vm._s(_vm.program.trukme_sav)
+                  ),
                 ]),
                 _vm._v(" "),
                 _c("hr"),
                 _vm._v(" "),
-                _c("h3", [_vm._v("Trainer")]),
+                _c("h3", [_vm._v("Treneris")]),
                 _vm._v(" "),
                 _vm._l(_vm.trainerData, function (trainer) {
                   return _c("div", { key: trainer.id }, [
@@ -22098,6 +23088,7 @@ var render = function () {
                       _c(
                         "div",
                         {
+                          key: _vm.rerender,
                           staticClass: "w-75 p-3",
                           staticStyle: {
                             "background-color": "#575757",
@@ -22135,6 +23126,110 @@ var render = function () {
                               ),
                             ]),
                             _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass: "py-2 px-3",
+                                staticStyle: { "background-color": "red" },
+                                on: {
+                                  click: function ($event) {
+                                    return _vm.deleteReview(review.id)
+                                  },
+                                },
+                              },
+                              [_vm._v("TRINTI")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass: "py-2 px-3",
+                                staticStyle: { "background-color": "#548699" },
+                                on: {
+                                  click: function ($event) {
+                                    return _vm.openEditForm(index)
+                                  },
+                                },
+                              },
+                              [_vm._v("REDAGUOTI")]
+                            ),
+                            _vm._v(" "),
+                            review.showEditForm
+                              ? _c(
+                                  "form",
+                                  {
+                                    staticClass: "mb-5 mt-1",
+                                    staticStyle: { color: "white" },
+                                    on: {
+                                      submit: function ($event) {
+                                        $event.preventDefault()
+                                        return _vm.updateProgramReview(
+                                          $event,
+                                          review.id
+                                        )
+                                      },
+                                    },
+                                  },
+                                  [
+                                    _c("input", {
+                                      staticClass: "mb-1",
+                                      staticStyle: { width: "97%" },
+                                      attrs: {
+                                        type: "text",
+                                        name: "atsiliepimas",
+                                      },
+                                      domProps: { value: review.atsiliepimas },
+                                    }),
+                                    _vm._v(" "),
+                                    _c("input", {
+                                      staticStyle: { width: "32%" },
+                                      attrs: {
+                                        type: "text",
+                                        name: "pradinis_kuno_svoris_kg",
+                                      },
+                                      domProps: {
+                                        value: review.pradinis_kuno_svoris_kg,
+                                      },
+                                    }),
+                                    _vm._v(" "),
+                                    _c("input", {
+                                      staticStyle: { width: "33%" },
+                                      attrs: {
+                                        type: "text",
+                                        name: "dabartinis_kuno_svoris_kg",
+                                      },
+                                      domProps: {
+                                        value: review.dabartinis_kuno_svoris_kg,
+                                      },
+                                    }),
+                                    _vm._v(" "),
+                                    _c("input", {
+                                      staticStyle: { width: "31.3%" },
+                                      attrs: {
+                                        type: "text",
+                                        name: "programos_tikslas",
+                                      },
+                                      domProps: {
+                                        value: review.programos_tikslas,
+                                      },
+                                    }),
+                                    _vm._v(" "),
+                                    _c(
+                                      "button",
+                                      {
+                                        staticClass: "px-4 py-2 mt-2",
+                                        staticStyle: {
+                                          width: "97%",
+                                          "background-color": "#4a8699",
+                                        },
+                                        attrs: { type: "submit" },
+                                      },
+                                      [_vm._v("Redaguoti")]
+                                    ),
+                                  ]
+                                )
+                              : _vm._e(),
+                            _vm._v(" "),
                             _c("hr"),
                           ])
                         }),
@@ -22145,10 +23240,18 @@ var render = function () {
                 ])
               : _vm._e(),
             _vm._v(" "),
+            _c("h3", { staticClass: "text-white mt-5 mb-0" }, [
+              _vm._v("Pridekite komentara apie programa"),
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "text-white mb-3" }, [
+              _vm._v("Ir padekite del pirkimo apsispresti kitiems"),
+            ]),
+            _vm._v(" "),
             _c(
               "form",
               {
-                staticClass: "mt-5",
+                staticClass: "mb-5",
                 staticStyle: { color: "white" },
                 on: {
                   submit: function ($event) {
@@ -22159,6 +23262,8 @@ var render = function () {
               },
               [
                 _c("input", {
+                  staticClass: "mb-1",
+                  staticStyle: { width: "97%" },
                   attrs: {
                     type: "text",
                     name: "atsiliepimas",
@@ -22167,6 +23272,7 @@ var render = function () {
                 }),
                 _vm._v(" "),
                 _c("input", {
+                  staticStyle: { width: "32%" },
                   attrs: {
                     type: "text",
                     name: "pradinis_kuno_svoris_kg",
@@ -22175,6 +23281,7 @@ var render = function () {
                 }),
                 _vm._v(" "),
                 _c("input", {
+                  staticStyle: { width: "33%" },
                   attrs: {
                     type: "text",
                     name: "dabartinis_kuno_svoris_kg",
@@ -22183,6 +23290,7 @@ var render = function () {
                 }),
                 _vm._v(" "),
                 _c("input", {
+                  staticStyle: { width: "31.3%" },
                   attrs: {
                     type: "text",
                     name: "programos_tikslas",
@@ -22193,7 +23301,11 @@ var render = function () {
                 _c(
                   "button",
                   {
-                    staticClass: "px-4 py-2 mt-2 w-100",
+                    staticClass: "px-4 py-2 mt-2",
+                    staticStyle: {
+                      width: "97%",
+                      "background-color": "#4a8699",
+                    },
                     attrs: { type: "submit" },
                   },
                   [_vm._v("Įterpti")]

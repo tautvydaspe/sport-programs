@@ -16,7 +16,7 @@ class ProgramController extends Controller
      */
     public function index()
     {
-        $data = Programa::join('pagrindinis_programos_tikslas', 'pagrindinis_programos_tikslas.id_pagrindinis_programos_tikslas', '=', 'programa.fk_tikslas_id')
+        $data = Programa::join('pagrindinis_programos_tikslas', 'pagrindinis_programos_tikslas.id', '=', 'programa.fk_tikslas_id')
             ->get(['programa.id', 'programa.pavadinimas', 'programa.trukme_sav', 'programa.kaina', 'programa.programos_pagrindine_dirbama_raumenu_grupe', 'programa.nuotrauka', 'pagrindinis_programos_tikslas.tikslas']);
 
 //        $program = Programa::find(1);

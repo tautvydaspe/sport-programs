@@ -41,7 +41,16 @@ class PagrindinisProgramosTikslasController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'tikslas' => 'required',
+        ]);
+
+        $newGoal = new PagrindinisProgramosTikslas;
+        $newGoal->tikslas = $request->get("tikslas");
+
+        $newGoal->save();
+
+        return $newGoal;
     }
 
     /**
@@ -75,7 +84,12 @@ class PagrindinisProgramosTikslasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $existingGoal = PagrindinisProgramosTikslas::find( $id );
+
+        if( $existingGoal ) {
+            $existingGoal->tikslas = $request->get("tikslas");
+            $existingGoal->save();
+        }
     }
 
     /**
@@ -86,6 +100,12 @@ class PagrindinisProgramosTikslasController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $existingGoal = PagrindinisProgramosTikslas::find($id);
+
+        if ($existingGoal) {
+            $existingGoal->delete();
+            return "Goal successfully deleted.";
+        }
+        return "Goal not found";
     }
 }

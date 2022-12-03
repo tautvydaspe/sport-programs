@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Treneris;
 use Illuminate\Http\Request;
 
 class TrenerisController extends Controller
@@ -13,7 +13,9 @@ class TrenerisController extends Controller
      */
     public function index()
     {
-        //
+        $data = Treneris::all();
+
+        return $data;
     }
 
     /**
@@ -34,7 +36,22 @@ class TrenerisController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'vardas' => 'required',
+            'pavarde' => 'required',
+            'specializacija' => 'required',
+            'issilavinimas' => 'required',
+        ]);
+
+        $newTrainer = new Treneris;
+        $newTrainer->vardas = $request->get("vardas");
+        $newTrainer->pavarde = $request->get("pavarde");
+        $newTrainer->specializacija = $request->get("specializacija");
+        $newTrainer->issilavinimas = $request->get("issilavinimas");
+
+        $newTrainer->save();
+
+        return $newTrainer;
     }
 
     /**
@@ -68,7 +85,15 @@ class TrenerisController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $existingTrainer = Treneris::find( $id );
+
+        if( $existingTrainer ) {
+            $existingTrainer->vardas = $request->get("vardas");
+            $existingTrainer->pavarde = $request->get("pavarde");
+            $existingTrainer->specializacija = $request->get("specializacija");
+            $existingTrainer->issilavinimas = $request->get("issilavinimas");
+            $existingTrainer->save();
+        }
     }
 
     /**
@@ -79,6 +104,12 @@ class TrenerisController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $existingTrainer = Treneris::find($id);
+
+        if ($existingTrainer) {
+            $existingTrainer->delete();
+            return "Trainer successfully deleted.";
+        }
+        return "Trainer not found";
     }
 }
