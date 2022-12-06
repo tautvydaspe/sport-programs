@@ -45,7 +45,7 @@
                 <input class="w-25 mb-1" type="text" name="main_goal" placeholder="Pagrindinis tikslas" /><br>
                 <input class="w-25 mb-1" type="text" name="phone_number" placeholder="Telefono numeris" /><br>
                 <input class="w-25 mb-1" type="text" name="email" placeholder="El. pastas" /><br>
-                <input class="w-25 mb-1" type="text" name="password" placeholder="Slaptazodis" /><br>
+                <input class="w-25 mb-1" type="password" name="password" placeholder="Slaptazodis" /><br>
                 <input class="w-25 mb-1" placeholder="Pakartokite slaptazodi" type="password" name="password_confirmation"><br>
                 <button style="background-color: #4a8699" type="submit" class="px-4 py-2 mt-2">Įterpti</button>
             </form>

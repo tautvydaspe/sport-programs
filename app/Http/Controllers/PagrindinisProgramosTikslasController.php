@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TikslasRequest;
 use App\Models\PagrindinisProgramosTikslas;
 use Illuminate\Http\Request;
 
@@ -39,11 +40,11 @@ class PagrindinisProgramosTikslasController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TikslasRequest $request)
     {
-        $validatedData = $request->validate([
-            'tikslas' => ['required', 'max:100', 'min:2'],
-        ]);
+//        $validatedData = $request->validate([
+//            'tikslas' => ['required', 'max:100', 'min:2'],
+//        ]);
 
         $newGoal = new PagrindinisProgramosTikslas;
         $newGoal->tikslas = $request->get("tikslas");
@@ -82,11 +83,11 @@ class PagrindinisProgramosTikslasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(TikslasRequest $request, $id)
     {
-        $validatedData = $request->validate([
-            'tikslas' => ['required', 'max:100', 'min:2'],
-        ]);
+//        $validatedData = $request->validate([
+//            'tikslas' => ['required', 'max:100', 'min:2'],
+//        ]);
 
         $existingGoal = PagrindinisProgramosTikslas::find( $id );
 

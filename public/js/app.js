@@ -22113,7 +22113,7 @@ var render = function () {
             _c("input", {
               staticClass: "w-25 mb-1",
               attrs: {
-                type: "text",
+                type: "password",
                 name: "password",
                 placeholder: "Slaptazodis",
               },

@@ -25,7 +25,7 @@ class UserController extends Controller
                 'last_name' => ['required', 'max:50', 'min:2'],
                 'main_goal' => ['required', 'max:50', 'min:2'],
                 'phone_number' => ['required', 'max:15', 'min:9'],
-                'email' => ['required', 'email', 'unique:users', 'max:255', 'min:5'],
+                'email' => ['required', 'email', 'max:255', 'min:5'],
                 'password' =>['required', 'min:6', 'confirmed']
             ]);
 
@@ -48,8 +48,7 @@ class UserController extends Controller
                 'last_name' => ['required', 'max:50', 'min:2'],
                 'main_goal' => ['required', 'max:50', 'min:2'],
                 'phone_number' => ['required', 'max:15', 'min:9'],
-                'email' => ['required', 'email', 'unique:users', 'max:255', 'min:5'],
-                'password' =>['required', 'min:6', 'confirmed']
+                'email' => ['required', 'email', 'max:255', 'min:5'],
             ]);
 
             $existingUser = User::find( $id );
